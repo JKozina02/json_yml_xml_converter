@@ -3,7 +3,7 @@ import json, xmltodict, yaml
 
 file = sys.argv[1]
 file_object = open(file, "r")
-#new_file = str(sys.argv[2])
+format_in = str(sys.argv[2])
 
 def file_format(file): #returns format of a file
 
@@ -48,7 +48,7 @@ def is_valid(file, type): #checks if format is correct
         case "wrong":
             return False
 
-def convert_json(file,new_type):
+def convert_json(file, new_type): #convert json file into chosen type
 
     with open(file) as input:
         jsonStr = input.read()
@@ -56,28 +56,91 @@ def convert_json(file,new_type):
 
     match new_type:
         case "xml":
-            print("konwersja json na xml")
+            print("json to xml")
             try:
-                new_file = open("xml_converted_file.xml", "w")
+                new_file = open("converted_file.xml", "w")
                 new_file.write(xmltodict.unparse(obj,))
                 new_file.close()
             except ValueError as error:
                 print("Cant convert that file to xml: ", error)
         case "yml" | "yaml":
+            print("json to yaml")
             try:
-                new_file = open("yaml_converted_file.yml", "w")
+                new_file = open("converted_file.yml", "w")
                 new_file.write(yaml.dump(obj))
                 new_file.close()
             except ValueError as error:
                 print("Cant convert that file to yaml: ", error)
         case "json":
-            print("Plik już jest w formacie json")
-            return file
+            print("file is already in json")
 
-my_format = file_format(file)
-print(my_format)
-print(is_valid(file_object, my_format))
-convert_json(file, "xml")
+def convert_xml(file, new_type): #convert xml file into chosen type
+
+    with open(file) as input:
+        xmlStr = input.read()
+        obj = xmltodict.parse(xmlStr)
+
+    match new_type:
+        case "xml":
+            print("file is already in xml")
+        case "yml" | "yaml":
+            print("xml to yaml")
+            try:
+                new_file = open("converted_file.yml", "w")
+                new_file.write(yaml.dump(obj))
+                new_file.close()
+            except ValueError as error:
+                print("Cant convert that file to yaml: ", error)
+        case "json":
+            print("xml to json")
+            try:
+                new_file = open("converted_file.json", "w")
+                new_file.write(json.dumps(obj))
+                new_file.close()
+            except ValueError as error:
+                print("Cant convert that file to json: ", error)
+
+def convert_yaml(file, new_type):
+    with open(file) as input:
+        yamlStr = input.read()
+        obj = yaml.dump(yamlStr)
+
+    match new_type:
+        case "xml":
+            print("yaml to xml")
+            try:
+                new_file = open("converted_file.xml", "w")
+                new_file.write(xmltodict.unparse(obj))
+                new_file.close()
+            except ValueError as error:
+                print("Cant convert that file to xml: ", error)
+        case "yml" | "yaml":
+            print("file is already in yaml")
+        case "json":
+            print("yaml to json")
+            try:
+                new_file = open("converted_file.json", "w")
+                new_file.write(json.dumps(obj))
+                new_file.close()
+            except ValueError as error:
+                print("Cant convert that file to json: ", error)
+
+if (format_in == "json" or format_in == "xml" or format_in =="yml" or format_in =="yaml"):
+    if is_valid(file_object, file_format(file)):
+        print("your file data is valid ", file_format(file))
+        match file_format(file):
+            case "json":
+                convert_json(file, format_in)
+            case "xml":
+                convert_xml(file, format_in)
+            case "yaml"|"yml":
+                convert_yaml(file, format_in)
+    else:
+        print("your file data is invalid")
+
+else:
+    print(format, " is not correct format")
+
 
 
 
